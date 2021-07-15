@@ -17,7 +17,7 @@ module.exports.select = async function (maloaihoa) {
                 <img src='/images/${dshoa[i].hinh}' style='width: 150px'></br>
                 <a href='/chi-tiet/${dshoa[i].mahoa}'>Tên hoa: ${dshoa[i].tenhoa}</a>
                 <a href='/mua-hoa/${dshoa[i].mahoa}'>
-                    <img src='/images/gio_hang.jpg' />
+                    <img src='/images/gio_hang.jpg' height='35px' />
                 </a></br>
                 <i>Giá bán: </i> ${Number(dshoa[i].giaban).toLocaleString('de-DE')}VNĐ
             </td>
@@ -27,7 +27,7 @@ module.exports.select = async function (maloaihoa) {
             kq += `</tr>`;
     }
 
-    kq += `</table`;
+    kq += `</table>`;
     return kq;
 }
 
@@ -76,29 +76,30 @@ module.exports.selectFind = async function (tenhoa) {
     for (i = 0; i < dshoa.length; i++) {
         if (i % 2 == 0)
             kq += `<tr>`
-            kq += `
-                    <td width='50%'>
-                        <table width='100%'>
-                            <tr>
-                                <td>
-                                    <img src='/images/${dshoa[i].hinh}'>
-                                </td>
-                                <td>
-                                    Tên hoa: ${dshoa[i].tenhoa} </br>
-                                    Giá bán: ${dshoa[i].giaban} </br>
-                                    Mô Tả: ${dshoa[i].mota} </br>
-                                    <a href='/${dshoa[i].maloai}'>Về Trang Chủ</a>
-                                </td>
-                            </tr>
-                        </table>
-                    </td>
-            `;
+        
+        kq += `
+                <td width='50%'>
+                    <table width='100%'>
+                        <tr>
+                            <td width='40%'>
+                                <img src='/images/${dshoa[i].hinh}'>
+                            </td>
+                            <td width='60%'>
+                                Tên hoa: <b>${dshoa[i].tenhoa}</b> </br>
+                                Giá bán: ${dshoa[i].giaban} </br>
+                                Mô Tả: ${dshoa[i].mota} </br>
+                                <a href='/${dshoa[i].maloai}'>Về Trang Chủ</a>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+        `;
         
         if ((i + 1) % 2 == 0)
             kq += `</tr>`;
     }
 
-    kq = kq + "</table";
+    kq = kq + "</table>";
     return kq;
 }
 
