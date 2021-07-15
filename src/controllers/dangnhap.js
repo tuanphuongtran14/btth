@@ -18,7 +18,6 @@ exports.login = async function(req, res) {
                 diachi: user.dia_chi,
                 dienthoai: user.so_dt,
                 email: user.email,
-                isLogin: true
             }
 
             return res.redirect('/');

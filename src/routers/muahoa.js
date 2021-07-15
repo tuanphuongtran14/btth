@@ -18,7 +18,7 @@ function sendmail(tomail, tieude, noidung) {
 		subject: tieude,
 		html: noidung
 	};
-	console.log(noidung);
+
 	transporter.sendMail(mailOptions, function(err, info) {
 		if(err) {
 			console.log(err);
@@ -79,30 +79,97 @@ router.post('/xu-ly-dat-hang', async function(req, res) {
     const kq = await donhang.insert(dh);
 
     const giohang = req.session.giohang;
-    // Xử lý gửi mail
-    let ttctgh = `<h1 align='center'>Thông Tin Đơn Hàng #${kq.sodh}</h1>`
-    ttctgh += "<p>Họ tên: " + thongtin.ho_ten + "</p>";
-    ttctgh += "<p>Địa chỉ giao hàng: " + thongtin.dia_chi + "</p>";
-    ttctgh += "<p>Email: " + thongtin.email + "</p>";
-    ttctgh += "<p>Số điện thoại: " + thongtin.dien_thoai + "</p>";
-    ttctgh += "<table width='100%' cellspacing='0' cellpadding='2' border='1'";
-    ttctgh += "<tr><td width='10%'>STT</td><td width='15%'>Mã hoa</td><td width='30%'>Tên hoa</td><td width='10%'>SL</td>" +
-    "<td width='15%'>Đơn giá</td><td>Thành tiền</td>";
+    // Xử lý gửi mail khách hàng
+    let customerMailContent = `
+        <h1 align='center'>Thông Tin Đơn Hàng #${kq.sodh}</h1>
+        <p>Họ tên: ${thongtin.ho_ten}</p>
+        <p>Địa chỉ giao hàng: ${thongtin.dia_chi}</p>
+        <p>Email: ${thongtin.email}</p>
+        <p>Số điện thoại: ${thongtin.dien_thoai}</p>
+        <table width='100%' cellspacing='0' cellpadding='2' border='1'>
+            <tr>
+                <td width='10%'>STT</td>
+                <td width='15%'>Mã hoa</td>
+                <td width='30%'>Tên hoa</td>
+                <td width='10%'>SL</td>
+                <td width='15%'>Đơn giá</td>
+                <td>Thành tiền</td>
+            </tr>
+    `;
     let stt = 1;
     let tongtien = 0;
     for(let i = 0; i < giohang.length; i++) {
-        ttctgh += "<tr><td>" + stt + "</td><td>" + giohang[i].mahoa + "</td><td>" + giohang[i].tenhoa
-        + "</td><td>" + giohang[i].soluong + "</td><td>" + giohang[i].giaban.toLocaleString('DE-de') + "VNĐ</td><td>" + (giohang[i].giaban * giohang[i].soluong).toLocaleString('DE-de') 
-        + "VNĐ</td></tr>";
+        customerMailContent += `
+            <tr>
+                <td>${stt}</td>
+                <td>${giohang[i].mahoa}</td>
+                <td>${giohang[i].tenhoa}</td>
+                <td>${giohang[i].soluong}</td>
+                <td>${giohang[i].giaban.toLocaleString('DE-de')}VNĐ</td>
+                <td>${(giohang[i].giaban * giohang[i].soluong).toLocaleString('DE-de')}VNĐ</td>
+            </tr>
+        `
 
-        tongtien += (giohang[i].giaban  * giohang[i].soluong).toLocaleString('DE-de');
+        tongtien += giohang[i].giaban  * giohang[i].soluong;
         stt++;
     }
     
-    ttctgh += `<tr><td colspan='6' align='right'>Tổng thành tiền ${tongtien}VNĐ </td></tr></table>`;
-    ttctgh += "<p>Cảm ơn quý khách đã đặt hàng, đơn hàng sẽ được giao trong thời gian sớm nhất";
+    customerMailContent += `
+            <tr>
+                <td colspan='6' align='right'>Tổng thành tiền: ${tongtien.toLocaleString('DE-de')}VNĐ </td>
+            </tr>
+        </table>
+        <p>Cảm ơn quý khách đã đặt hàng, đơn hàng sẽ được giao trong thời gian sớm nhất/p>
+    `;
 
-    sendmail(thongtin.email, `Đơn hàng #${kq.sodh} đặt hàng thành công - Shop hoa tươi UIT`, ttctgh);
+    sendmail(thongtin.email, `Đơn hàng #${kq.sodh} đặt hàng thành công - Shop hoa tươi UIT`, customerMailContent);
+
+    // Xử lý gửi mail nhân viên
+    let staffMailContent = `
+        <h1 align='center'>Đơn hàng mới #${kq.sodh}</h1>
+        <p>Một đơn hàng mới vừa được đặt tại website</p>
+        <hr />
+        <p>Họ tên: ${thongtin.ho_ten}</p>
+        <p>Địa chỉ giao hàng: ${thongtin.dia_chi}</p>
+        <p>Email: ${thongtin.email}</p>
+        <p>Số điện thoại: ${thongtin.dien_thoai}</p>
+        <table width='100%' cellspacing='0' cellpadding='2' border='1'>
+            <tr>
+                <td width='10%'>STT</td>
+                <td width='15%'>Mã hoa</td>
+                <td width='30%'>Tên hoa</td>
+                <td width='10%'>SL</td>
+                <td width='15%'>Đơn giá</td>
+                <td>Thành tiền</td>
+            </tr>
+    `;
+    stt = 1;
+    tongtien = 0;
+    for(let i = 0; i < giohang.length; i++) {
+        staffMailContent += `
+            <tr>
+                <td>${stt}</td>
+                <td>${giohang[i].mahoa}</td>
+                <td>${giohang[i].tenhoa}</td>
+                <td>${giohang[i].soluong}</td>
+                <td>${giohang[i].giaban.toLocaleString('DE-de')}VNĐ</td>
+                <td>${(giohang[i].giaban * giohang[i].soluong).toLocaleString('DE-de')}VNĐ</td>
+            </tr>
+        `
+
+        tongtien += giohang[i].giaban  * giohang[i].soluong;
+        stt++;
+    }
+    
+    staffMailContent += `
+            <tr>
+                <td colspan='6' align='right'>Tổng thành tiền: ${tongtien.toLocaleString('DE-de')}VNĐ </td>
+            </tr>
+        </table>
+    `;
+
+    const staffEmail = process.env.STAFF_MAIL;
+    sendmail(staffEmail, `Đơn hàng mới #${kq.sodh} - Shop hoa tươi UIT`, staffMailContent);
 
     if(kq) 
         req.session.giohang = undefined;

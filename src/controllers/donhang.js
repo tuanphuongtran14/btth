@@ -8,7 +8,7 @@ exports.select = async function(sodh) {
 
 
 exports.insert = async function(input) {
-    const lastDonHang = await DonHang.findOne({});
+    const lastDonHang = await DonHang.findOne({}).sort({ _id: -1 });
 
     let sodh = 1;
 

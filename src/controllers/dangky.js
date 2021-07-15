@@ -2,7 +2,10 @@ const NguoiDung = require('../models/NguoiDung');
 const bcrypt = require('bcrypt');
 
 exports.render = function(req, res) {
-    res.render("trang_dang_ky", {error_messages: '', success_messages: ''});
+    if(!req.session.user)
+        return res.render("trang_dang_ky", {error_messages: '', success_messages: ''});
+    
+    return res.redirect('/');
 };
 
 exports.createUser = function(req, res) {
